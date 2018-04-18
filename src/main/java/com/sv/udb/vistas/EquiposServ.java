@@ -32,9 +32,10 @@ public class EquiposServ extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {        
+            throws ServletException, IOException {
         boolean esValido = request.getMethod().equals("POST");
         String mens = "";
+        boolean resp = false;
         if(!esValido)
         {
             response.sendRedirect(request.getContextPath() + "/index.jsp");
@@ -47,6 +48,7 @@ public class EquiposServ extends HttpServlet {
                 if(new EquiposCtrl().guar(request.getParameter("nomb"), request.getParameter("desc")))
                 {
                     mens = "Datos guardados";
+                    resp = true;
                 }
                 else
                 {
@@ -64,6 +66,7 @@ public class EquiposServ extends HttpServlet {
                     request.setAttribute("nomb", obje.getNombEqui());
                     request.setAttribute("desc", obje.getDescEqui());
                     mens = "Información consultada";
+//                    resp = true;
                     request.setAttribute("estaModi", "true"); //Esta modificando
                 }
                 else
@@ -72,6 +75,7 @@ public class EquiposServ extends HttpServlet {
                 }
             }
             request.setAttribute("mensAler", mens);
+            request.setAttribute("resp", resp);
             request.getRequestDispatcher("/index.jsp").forward(request, response);
         }
     }

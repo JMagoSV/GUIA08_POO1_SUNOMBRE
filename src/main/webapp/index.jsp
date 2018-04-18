@@ -7,6 +7,8 @@
 <%@page import="com.sv.udb.controlador.EquiposCtrl"%>
 <%@page import="com.sv.udb.modelo.Equipos"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://displaytag.sf.net" prefix="display"%>
+<%@ taglib  prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
 <html>
     <head>
@@ -17,11 +19,6 @@
         <script type="text/javascript" src="webjars/bootstrap/3.2.0/js/bootstrap.min.js"></script>
     </head>
     <body>
-        <%
-            boolean estaModi = Boolean.parseBoolean((String)request.getAttribute("estaModi"));
-            String nombBton = estaModi ? "Nuevo" : "Guardar"; // Para el texto del botón
-            String clssEditBton = estaModi ? "" : "display: none"; //Pra ocultar botones
-        %>
         <div class="container">
             <div class="alert alert-success">
                 <strong>Indicaciones:</strong> Usando Bootstrap con la Guía 08.
@@ -31,6 +28,11 @@
                     <div class="panel panel-primary">
                         <div class="panel-heading">El Formulario</div>
                         <div class="panel-body">
+                            <c:if test="${resp}">
+                                <div class="alert alert-success">
+                                    ${mensAler}
+                                </div>
+                            </c:if>
                             <div class="alert alert-success">
                                 ${mensAler}
                             </div>
@@ -44,9 +46,16 @@
                                     <label for="desc">Descripción:</label>
                                     <input type="text" class="form-control" name="desc" id="desc" value="${desc}"/>
                                 </div>
-                                <input type="submit" class="btn btn-default" name="btonEqui" value="<%=nombBton%>"/>
-                                <input type="submit" class="btn btn-primary" style="<%=clssEditBton%>" name="btonEqui" value="Modificar"/>
-                                <input type="submit" class="btn btn-danger" style="<%=clssEditBton%>" name="btonEqui" value="Eliminar"/>
+                                    <c:choose>
+                                        <c:when test = "${mensAler != false}">
+                                            <input type="submit" class="btn btn-default" name="btonEqui" value="Guardar"/>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <input type="submit" class="btn btn-default" name="btonEqui" value="Nuevo"/>
+                                            <input type="submit" class="btn btn-primary" name="btonEqui" value="Modificar"/>
+                                            <input type="submit" class="btn btn-danger" name="btonEqui" value="Eliminar"/>
+                                        </c:otherwise>
+                                    </c:choose>
                             </form>
                         </div>
                     </div>
@@ -56,25 +65,13 @@
                         <div class="panel-heading">La Tabla</div>
                         <div class="panel-body">
                             <form method="POST" action="EquiposServ" name="Tabl">
-                                <table class="table table-bordered">
-                                    <tr>
-                                        <th>Cons</th>
-                                        <th>Nombre</th>
-                                        <th>Descripción</th>
-                                    </tr>
-                                    <%
-                                        for(Equipos temp : new EquiposCtrl().consTodo())
-                                        {
-                                    %>
-                                        <tr>
-                                            <td><input type="radio" name="codiEquiRadi" value="<%= temp.getCodiEqui() %>"/></td>
-                                            <td><%= temp.getNombEqui() %></td>
-                                            <td><%= temp.getDescEqui() %></td>
-                                        </tr>
-                                    <%
-                                        }
-                                    %>
-                                </table>
+                                <display:table export="true" id="tablEqui" name="<%= new EquiposCtrl().consTodo()%>">
+                                    <display:column title="Cons" >
+                                        <input type="radio" name="codiEquiRadi" value="${tablEqui.codiEqui}"/>
+                                    </display:column>
+                                    <display:column property="descEqui" title="Descripción" sortable="true"/>                                            
+                                    <display:column property="nombEqui" title="Nombre Equipo" sortable="true"/>
+                                </display:table>
                                 <input type="submit" class="btn btn-success" name="btonEqui" value="Consultar"/>
                             </form>
                         </div>
