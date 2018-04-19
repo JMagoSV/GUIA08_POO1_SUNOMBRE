@@ -20,6 +20,15 @@
     </head>
     <body>
         <div class="container">
+            <jsp:useBean id="objeEqui" class="com.sv.udb.modelo.Equipos" scope="request">
+                <jsp:setProperty name="objeEqui" property="*"/>
+            </jsp:useBean>
+            <c:if test = '<%=request.getHeader("Referer") != null %>'>
+                <c:if test='${estaProcesado == false}'>
+                    <% request.setAttribute("estaProcesado", true); %>
+                    <jsp:forward page="EquiposServ"/>
+                </c:if>
+            </c:if>
             <div class="alert alert-success">
                 <strong>Indicaciones:</strong> Usando Bootstrap con la Guía 08.
             </div>
@@ -43,14 +52,14 @@
                                 </c:choose>
                             </c:if>
                             <form method="POST" action="EquiposServ" name="Demo">
-                                <input type="hidden" name="codi" id="codi" value="${codi}"/>
+                                <input type="hidden" name="codiEqui" id="codi" value="${objeEqui.codiEqui}"/>
                                 <div class="form-group">
                                     <label for="nomb">Nombre:</label>
-                                    <input type="text" class="form-control" name="nomb" id="nomb" value="${nomb}"/>
+                                    <input type="text" class="form-control" name="nombEqui" id="nomb" value="${objeEqui.nombEqui}"/>
                                 </div>
                                 <div class="form-group">
                                     <label for="desc">Descripción:</label>
-                                    <input type="text" class="form-control" name="desc" id="desc" value="${desc}"/>
+                                    <input type="text" class="form-control" name="descEqui" id="desc" value="${objeEqui.descEqui}"/>
                                 </div>
                                     <c:choose>
                                         <c:when test = "${!estaModi}">

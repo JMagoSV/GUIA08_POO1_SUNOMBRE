@@ -61,6 +61,77 @@ public class EquiposCtrl {
         return resp;
     }
     
+    public boolean guar(Equipos obje)
+    {
+        boolean resp = false;
+        try
+        {
+            PreparedStatement cmd = this.conn.prepareStatement("INSERT INTO equipos VALUES(NULL, ?, ?)");
+            cmd.setString(1, obje.getNombEqui());
+            cmd.setString(2, obje.getDescEqui());
+            cmd.executeUpdate();
+            resp = true;
+        }
+        catch (Exception e)
+        {
+            System.err.println("Error al guardar Equipos: " + e.getMessage());
+        }
+        finally
+        {
+            try
+            {
+                if(this.conn != null)
+                {
+                    if(!this.conn.isClosed())
+                    {
+                        this.conn.close();
+                    }
+                }
+            }
+            catch(SQLException e)
+            {
+                System.err.println("Error al cerrar la conexión: " + e.getMessage());
+            }
+        }
+        return resp;
+    }
+    
+    public boolean modi(Equipos obje)
+    {
+        boolean resp = false;
+        try
+        {
+            PreparedStatement cmd = this.conn.prepareStatement("UPDATE equipos SET nomb_equi = ?, desc_equi = ? WHERE codi_equi = ?");
+            cmd.setString(1, obje.getNombEqui());
+            cmd.setString(2, obje.getDescEqui());
+            cmd.setInt(3, obje.getCodiEqui());
+            cmd.executeUpdate();
+            resp = true;
+        }
+        catch (Exception e)
+        {
+            System.err.println("Error al modificar Equipos: " + e.getMessage());
+        }
+        finally
+        {
+            try
+            {
+                if(this.conn != null)
+                {
+                    if(!this.conn.isClosed())
+                    {
+                        this.conn.close();
+                    }
+                }
+            }
+            catch(SQLException e)
+            {
+                System.err.println("Error al cerrar la conexión: " + e.getMessage());
+            }
+        }
+        return resp;
+    }
+    
     public List<Equipos> consTodo()
     {
        List<Equipos> resp = new ArrayList<>();

@@ -39,6 +39,7 @@ public class EquiposServ extends HttpServlet {
         String mens = "";
         boolean resp = false;
         boolean estaModi = false;
+        boolean estaProcesado = false;
         if(!esValido)
         {
             response.sendRedirect(request.getContextPath() + "/index.jsp");
@@ -48,27 +49,55 @@ public class EquiposServ extends HttpServlet {
             String CRUD = request.getParameter("btonEqui");
             if(CRUD.equals("Guardar"))
             {
-                if(new EquiposCtrl().guar(request.getParameter("nomb"), request.getParameter("desc")))
+                if(request.getAttribute("estaProcesado") != null)
                 {
-                    mens = "Datos guardados";
-                    estaModi = true;
-                    resp = true;
+                    if((boolean)request.getAttribute("estaProcesado"))
+                    {
+                        Equipos objeTemp = (Equipos)request.getAttribute("objeEqui");
+                        if(new EquiposCtrl().guar(objeTemp))
+                        {
+                            request.setAttribute("objeEqui", objeTemp);
+                            mens = "Datos guardados";
+                            estaModi = true;
+                            resp = true;
+                        }
+                        else
+                        {
+                            mens = "Error al guardar";
+                        }
+                        estaProcesado = true;
+                    }
                 }
-                else
+            }
+            else if(CRUD.equals("Modificar"))
+            {
+                if(request.getAttribute("estaProcesado") != null)
                 {
-                    mens = "Error al guardar";
+                    if((boolean)request.getAttribute("estaProcesado"))
+                    {
+                        Equipos objeTemp = (Equipos)request.getAttribute("objeEqui");
+                        if(new EquiposCtrl().modi(objeTemp))
+                        {
+                            mens = "Datos Modificados";
+                            estaModi = true;
+                            resp = true;
+                        }
+                        else
+                        {
+                            mens = "Error al modificar";
+                        }
+                        estaProcesado = true;
+                    }
                 }
             }
             else if(CRUD.equals("Consultar"))
             {
                 int codi = Integer.parseInt(request.getParameter("codiEquiRadi") == null ? "-1" : 
                         request.getParameter("codiEquiRadi"));
-                Equipos obje = new EquiposCtrl().cons(codi);
-                if(obje != null)
+                Equipos objeTemp = new EquiposCtrl().cons(codi);
+                if(objeTemp != null)
                 {
-                    request.setAttribute("codi", obje.getCodiEqui());
-                    request.setAttribute("nomb", obje.getNombEqui());
-                    request.setAttribute("desc", obje.getDescEqui());
+                    request.setAttribute("objeEqui", objeTemp);
                     mens = "Información consultada";
                     estaModi = true;
                     resp = true;
@@ -77,15 +106,19 @@ public class EquiposServ extends HttpServlet {
                 {
                     mens = "Error al consultar";
                 }
+                estaProcesado = true;
             }
             else if(CRUD.equals("Nuevo"))
             {
                 Equipos obje = new Equipos();
-                mens = null; 
+                request.setAttribute("objeEqui", obje);
+                mens = null;
+                estaProcesado = true;
             }
             request.setAttribute("estaModi", estaModi); //Esta modificando
             request.setAttribute("mensAler", mens);
             request.setAttribute("resp", resp);
+            request.setAttribute("estaProcesado", estaProcesado);
             request.getRequestDispatcher("/index.jsp").forward(request, response);
         }
     }
