@@ -28,14 +28,20 @@
                     <div class="panel panel-primary">
                         <div class="panel-heading">El Formulario</div>
                         <div class="panel-body">
-                            <c:if test="${resp}">
-                                <div class="alert alert-success">
-                                    ${mensAler}
-                                </div>
+                            <c:if test = "${mensAler != null}">
+                                <c:choose>
+                                    <c:when test = "${resp}">
+                                        <div class="alert alert-success">
+                                            ${mensAler}
+                                        </div>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <div class="alert alert-danger">
+                                            ${mensAler}
+                                        </div>
+                                    </c:otherwise>
+                                </c:choose>
                             </c:if>
-                            <div class="alert alert-success">
-                                ${mensAler}
-                            </div>
                             <form method="POST" action="EquiposServ" name="Demo">
                                 <input type="hidden" name="codi" id="codi" value="${codi}"/>
                                 <div class="form-group">
@@ -47,7 +53,7 @@
                                     <input type="text" class="form-control" name="desc" id="desc" value="${desc}"/>
                                 </div>
                                     <c:choose>
-                                        <c:when test = "${mensAler != false}">
+                                        <c:when test = "${!estaModi}">
                                             <input type="submit" class="btn btn-default" name="btonEqui" value="Guardar"/>
                                         </c:when>
                                         <c:otherwise>

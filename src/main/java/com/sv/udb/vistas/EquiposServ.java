@@ -22,6 +22,8 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet(name = "EquiposServ", urlPatterns = {"/EquiposServ"})
 public class EquiposServ extends HttpServlet {
 
+    private static final long serialVersionUID = 8265873876680656160L;
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -36,6 +38,7 @@ public class EquiposServ extends HttpServlet {
         boolean esValido = request.getMethod().equals("POST");
         String mens = "";
         boolean resp = false;
+        boolean estaModi = false;
         if(!esValido)
         {
             response.sendRedirect(request.getContextPath() + "/index.jsp");
@@ -48,6 +51,7 @@ public class EquiposServ extends HttpServlet {
                 if(new EquiposCtrl().guar(request.getParameter("nomb"), request.getParameter("desc")))
                 {
                     mens = "Datos guardados";
+                    estaModi = true;
                     resp = true;
                 }
                 else
@@ -66,14 +70,20 @@ public class EquiposServ extends HttpServlet {
                     request.setAttribute("nomb", obje.getNombEqui());
                     request.setAttribute("desc", obje.getDescEqui());
                     mens = "Información consultada";
-//                    resp = true;
-                    request.setAttribute("estaModi", "true"); //Esta modificando
+                    estaModi = true;
+                    resp = true;
                 }
                 else
                 {
                     mens = "Error al consultar";
                 }
             }
+            else if(CRUD.equals("Nuevo"))
+            {
+                Equipos obje = new Equipos();
+                mens = null; 
+            }
+            request.setAttribute("estaModi", estaModi); //Esta modificando
             request.setAttribute("mensAler", mens);
             request.setAttribute("resp", resp);
             request.getRequestDispatcher("/index.jsp").forward(request, response);
