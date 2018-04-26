@@ -4,6 +4,7 @@
     Author     : JMagoSV
 --%>
 
+<%@page import="com.sv.udb.modelo.Usuario"%>
 <%@page import="com.sv.udb.controlador.EquiposCtrl"%>
 <%@page import="com.sv.udb.modelo.Equipos"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -32,6 +33,8 @@
             <div class="alert alert-success">
                 <strong>Indicaciones:</strong> Usando Bootstrap con la Guía 08.
             </div>
+            <h4><%= (session.getAttribute("usuaLogeado") != null ? 
+                    ((Usuario)(session.getAttribute("usuaLogeado"))).getUsua() : "Nada") %></h4>
             <div class="row">
                 <div class="col-md-5">
                     <div class="panel panel-primary">
