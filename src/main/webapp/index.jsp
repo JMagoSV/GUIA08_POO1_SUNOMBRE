@@ -14,9 +14,14 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Mantenimiento de Jugadores</title>
-        <link rel='stylesheet' href='webjars/bootstrap/3.2.0/css/bootstrap.min.css'>
+        <link rel='stylesheet' href='webjars/bootstrap/3.2.0/css/bootstrap.min.css'/>
         <script type="text/javascript" src="webjars/jquery/2.1.1/jquery.min.js"></script>
         <script type="text/javascript" src="webjars/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="js/plugins/jquery-fields.min.js"></script>
+        <link rel='stylesheet' href='js/plugins/toastr.min.css'/>
+        <script type="text/javascript" src="js/plugins/toastr.min.js"></script>
+        <script type="text/javascript" src="js/mens.js"></script>
+        <script type="text/javascript" src="js/equipos.js"></script>
     </head>
     <body>
         <div class="container">
@@ -51,26 +56,19 @@
                                     </c:otherwise>
                                 </c:choose>
                             </c:if>
-                            <form method="POST" action="EquiposServ" name="Demo">
-                                <input type="hidden" name="codiEqui" id="codi" value="${objeEqui.codiEqui}"/>
+                            <form method="POST" action="EquiposServ" id="formEqui">
+                                <input type="hidden" name="codiEqui"/>
                                 <div class="form-group">
                                     <label for="nomb">Nombre:</label>
-                                    <input type="text" class="form-control" name="nombEqui" id="nomb" value="${objeEqui.nombEqui}"/>
+                                    <input type="text" class="form-control" name="nombEqui"/>
                                 </div>
                                 <div class="form-group">
                                     <label for="desc">Descripción:</label>
-                                    <input type="text" class="form-control" name="descEqui" id="desc" value="${objeEqui.descEqui}"/>
+                                    <input type="text" class="form-control" name="descEqui"/>
                                 </div>
-                                    <c:choose>
-                                        <c:when test = "${!estaModi}">
-                                            <input type="submit" class="btn btn-default" name="btonEqui" value="Guardar"/>
-                                        </c:when>
-                                        <c:otherwise>
-                                            <input type="submit" class="btn btn-default" name="btonEqui" value="Nuevo"/>
-                                            <input type="submit" class="btn btn-primary" name="btonEqui" value="Modificar"/>
-                                            <input type="submit" class="btn btn-danger" name="btonEqui" value="Eliminar"/>
-                                        </c:otherwise>
-                                    </c:choose>
+                                <div class="btn-group">
+                                    <input type="submit" class="btn btn-default" name="btonEqui" value="Guardar"/>
+                                </div>
                             </form>
                         </div>
                     </div>
@@ -79,7 +77,7 @@
                     <div class="panel panel-primary">
                         <div class="panel-heading">La Tabla</div>
                         <div class="panel-body">
-                            <form method="POST" action="EquiposServ" name="Tabl">
+                            <form method="POST" action="EquiposServ" id="formTabl">
                                 <display:table export="true" id="tablEqui" name="<%= new EquiposCtrl().consTodo()%>">
                                     <display:column title="Cons" >
                                         <input type="radio" name="codiEquiRadi" value="${tablEqui.codiEqui}"/>

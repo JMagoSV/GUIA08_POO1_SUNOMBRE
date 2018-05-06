@@ -5,10 +5,17 @@
  */
 package com.sv.udb.vistas;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.sv.udb.controlador.EquiposCtrl;
 import com.sv.udb.modelo.Equipos;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
+import javax.json.JsonObjectBuilder;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -35,11 +42,11 @@ public class EquiposServ extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        PrintWriter out = response.getWriter();
+        response.setContentType("application/json"); //Modificar el response
         boolean esValido = request.getMethod().equals("POST");
-        String mens = "";
-        boolean resp = false;
-        boolean estaModi = false;
-        boolean estaProcesado = false;
+        Map<String, Object> data = new HashMap<>(); //Set de respuestas (Este se usa en los reportes)
+        data.put("estaModi", false);
         if(!esValido)
         {
             response.sendRedirect(request.getContextPath() + "/index.jsp");
@@ -49,45 +56,34 @@ public class EquiposServ extends HttpServlet {
             String CRUD = request.getParameter("btonEqui");
             if(CRUD.equals("Guardar"))
             {
-                if(request.getAttribute("estaProcesado") != null)
+                Equipos objeTemp = new EquiposCtrl().guar(request.getParameter("nombEqui"), request.getParameter("descEqui"));
+                if(objeTemp != null)
                 {
-                    if((boolean)request.getAttribute("estaProcesado"))
-                    {
-                        Equipos objeTemp = (Equipos)request.getAttribute("objeEqui");
-                        if(new EquiposCtrl().guar(objeTemp))
-                        {
-                            request.setAttribute("objeEqui", objeTemp);
-                            mens = "Datos guardados";
-                            estaModi = true;
-                            resp = true;
-                        }
-                        else
-                        {
-                            mens = "Error al guardar";
-                        }
-                        estaProcesado = true;
-                    }
+                    data.put("resp", true);
+                    data.put("objeEqui", objeTemp);
+                    data.put("mens", "Información guardada");
+                    data.put("esNuevo", true);
+                    data.put("estaModi", true);
+                }
+                else
+                {
+                    data.put("resp", false);
+                    data.put("mens", "Error al guardar");
                 }
             }
             else if(CRUD.equals("Modificar"))
             {
-                if(request.getAttribute("estaProcesado") != null)
+                int codi = Integer.parseInt(request.getParameter("codiEquiRadi") == null ? "-1" : 
+                        request.getParameter("codiEquiRadi"));
+                if(new EquiposCtrl().modi(codi, request.getParameter("nombEqui"), request.getParameter("descEqui")))
                 {
-                    if((boolean)request.getAttribute("estaProcesado"))
-                    {
-                        Equipos objeTemp = (Equipos)request.getAttribute("objeEqui");
-                        if(new EquiposCtrl().modi(objeTemp))
-                        {
-                            mens = "Datos Modificados";
-                            estaModi = true;
-                            resp = true;
-                        }
-                        else
-                        {
-                            mens = "Error al modificar";
-                        }
-                        estaProcesado = true;
-                    }
+                    data.put("resp", true);
+                    data.put("mens", "Información modificada");
+                }
+                else
+                {
+                    data.put("resp", false);
+                    data.put("mens", "Error al modificar");
                 }
             }
             else if(CRUD.equals("Consultar"))
@@ -97,29 +93,26 @@ public class EquiposServ extends HttpServlet {
                 Equipos objeTemp = new EquiposCtrl().cons(codi);
                 if(objeTemp != null)
                 {
-                    request.setAttribute("objeEqui", objeTemp);
-                    mens = "Información consultada";
-                    estaModi = true;
-                    resp = true;
+                    data.put("resp", true);
+                    data.put("objeEqui", objeTemp);
+                    data.put("mens", "Información consultada");
+                    data.put("estaModi", true);
                 }
                 else
                 {
-                    mens = "Error al consultar";
+                    data.put("resp", false);
+                    data.put("mens", "Error al consultar");
                 }
-                estaProcesado = true;
             }
             else if(CRUD.equals("Nuevo"))
             {
-                Equipos obje = new Equipos();
-                request.setAttribute("objeEqui", obje);
-                mens = null;
-                estaProcesado = true;
+                Equipos objeTemp = new Equipos();
+                data.put("resp", true);
+                data.put("objeEqui", objeTemp);
+                data.put("mens", "Puede ingresar información nueva");
+                data.put("limp", true);
             }
-            request.setAttribute("estaModi", estaModi); //Esta modificando
-            request.setAttribute("mensAler", mens);
-            request.setAttribute("resp", resp);
-            request.setAttribute("estaProcesado", estaProcesado);
-            request.getRequestDispatcher("/index.jsp").forward(request, response);
+            out.print(new Gson().toJson(data));
         }
     }
 

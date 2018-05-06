@@ -11,6 +11,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,16 +27,19 @@ public class EquiposCtrl {
         this.conn = new Conexion().getConn();
     }
     
-    public boolean guar(String nombEqui, String descEqui)
+    public Equipos guar(String nombEqui, String descEqui)
     {
-        boolean resp = false;
+        Equipos resp = null;
         try
         {
-            PreparedStatement cmd = this.conn.prepareStatement("INSERT INTO equipos VALUES(NULL, ?, ?)");
+            PreparedStatement cmd = this.conn.prepareStatement("INSERT INTO equipos VALUES(NULL, ?, ?)", Statement.RETURN_GENERATED_KEYS);
             cmd.setString(1, nombEqui);
             cmd.setString(2, descEqui);
             cmd.executeUpdate();
-            resp = true;
+            ResultSet rs = cmd.getGeneratedKeys();
+            if(rs.next()){
+               resp = new Equipos(rs.getInt(1), nombEqui, descEqui);
+            }
         }
         catch (Exception e)
         {
@@ -61,50 +65,15 @@ public class EquiposCtrl {
         return resp;
     }
     
-    public boolean guar(Equipos obje)
-    {
-        boolean resp = false;
-        try
-        {
-            PreparedStatement cmd = this.conn.prepareStatement("INSERT INTO equipos VALUES(NULL, ?, ?)");
-            cmd.setString(1, obje.getNombEqui());
-            cmd.setString(2, obje.getDescEqui());
-            cmd.executeUpdate();
-            resp = true;
-        }
-        catch (Exception e)
-        {
-            System.err.println("Error al guardar Equipos: " + e.getMessage());
-        }
-        finally
-        {
-            try
-            {
-                if(this.conn != null)
-                {
-                    if(!this.conn.isClosed())
-                    {
-                        this.conn.close();
-                    }
-                }
-            }
-            catch(SQLException e)
-            {
-                System.err.println("Error al cerrar la conexión: " + e.getMessage());
-            }
-        }
-        return resp;
-    }
-    
-    public boolean modi(Equipos obje)
+    public boolean modi(int codiEqui, String nombEqui, String descEqui)
     {
         boolean resp = false;
         try
         {
             PreparedStatement cmd = this.conn.prepareStatement("UPDATE equipos SET nomb_equi = ?, desc_equi = ? WHERE codi_equi = ?");
-            cmd.setString(1, obje.getNombEqui());
-            cmd.setString(2, obje.getDescEqui());
-            cmd.setInt(3, obje.getCodiEqui());
+            cmd.setString(1, nombEqui);
+            cmd.setString(2, descEqui);
+            cmd.setInt(3, codiEqui);
             cmd.executeUpdate();
             resp = true;
         }
